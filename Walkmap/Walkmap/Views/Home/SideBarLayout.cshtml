@@ -1,0 +1,99 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@functions{
+    public string GetViewName()
+    {
+        string viewName = (this.ViewContext.View as RazorView).ViewPath.Split('/').Last().Split('.').First();
+        return viewName;
+    }
+}
+
+<style type="text/css">
+    .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 1000;
+        display: block;
+        padding: 20px;
+        overflow-x: hidden;
+        overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+        background-color: #f5f5f5;
+        border-right: 1px solid #eee;
+    }
+
+    /* Sidebar navigation */
+    .nav-sidebar {
+        margin-right: -21px; /* 20px padding + 1px border */
+        margin-bottom: 20px;
+        margin-left: -20px;
+    }
+
+        .nav-sidebar > li > a {
+            padding-right: 20px;
+            padding-left: 20px;
+        }
+
+        .nav-sidebar > .active > a,
+        .nav-sidebar > .active > a:hover,
+        .nav-sidebar > .active > a:focus {
+            color: #fff;
+            background-color: #428bca;
+        }
+
+    .main {
+        padding: 20px;
+    }
+
+        .main .page-header {
+            margin-top: 0;
+        }
+
+    /*
+     * Placeholder dashboard ideas
+     */
+
+    .placeholders {
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+        .placeholders h4 {
+            margin-bottom: 0;
+        }
+
+    .placeholder {
+        margin-bottom: 20px;
+    }
+
+        .placeholder img {
+            display: inline-block;
+            border-radius: 50%;
+        }
+}
+      
+</style>
+
+@{
+    string viewName = GetViewName();
+}
+<div class="row">
+    <div class="col-xs-2 sidebar">
+        <ul class="nav nav-sidebar">
+            <li class="@(viewName == "Index" ? "active" : "")"><a href="@(viewName == "Index" ? "#" : Url.Action("Index", "Home"))">Main</a></li>
+            <li class="@(viewName == "ChangePassword" ? "active" : "")"><a href="@(viewName == "ChangePassword" ? "#" : Url.Action("ChangePassword", "Home"))">Change Password</a></li>
+            @if (this.User.IsInRole("Admin") == true)
+            {
+                <li class="@(viewName == "Admin" ? "active" : "")"><a href="@(viewName == "Admin" ? "#" : Url.Action("Admin", "Home"))">Admin</a></li>
+            }
+            <li class="@(viewName == "Help" ? "active" : "")"><a href="@(viewName == "Help" ? "#" : Url.Action("Help", "Home"))">Help</a></li>
+            <li><a href="@Url.Action("Logout", "Home")">Logout</a></li>
+        </ul>
+    </div>
+    <div class="col-xs-10 col-xs-offset-2 main">
+        @RenderBody()
+    </div>
+</div>

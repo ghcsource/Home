@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+    <string name="app_name">Walkmap</string>
+    <string name="Site">http://169.254.80.80:54764</string>
+    <string name="SendPositionAPI">http://169.254.80.80:54764/Phone/SendPosition</string>
+    <string name="GetDeviceOwnerAPI">http://169.254.80.80:54764/Phone/GetDeviceOwner</string>
+    <string name="BindDeviceAPI">http://169.254.80.80:54764/Phone/BindDevice</string>
+    <string name="UnbindDeviceAPI">http://169.254.80.80:54764/Phone/UnbindDevice</string>
+</resources>

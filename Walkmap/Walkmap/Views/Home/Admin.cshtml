@@ -1,0 +1,29 @@
+﻿@{
+    Layout = "SideBarLayout.cshtml";
+    ViewBag.Title = "Admin";
+}
+
+@using Walkmap.DAL.Model
+@model Device[]
+
+<h1 class="page-header">All Device List</h1>
+
+<div class="table-responsive">
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>User Name</th>
+            <th>Device Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.User.UserName</td>
+                <td><a href="@Url.Action("ShowTrail", "Home", new { id = item.ID })">@item.DeviceName</a></td>
+            </tr>
+        }
+    </tbody>
+</table>
+</div>

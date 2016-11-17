@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"  
+                android:layout_width="fill_parent"  
+                android:layout_height="fill_parent">
+     
+    <LinearLayout android:id="@+id/errorView"
+                  android:layout_width="fill_parent"
+                  android:layout_height="fill_parent"
+                  android:gravity="center"
+                  android:visibility="gone">
+        <TextView
+            android:layout_width="wrap_content"  
+            android:layout_height="wrap_content"  
+            android:text="@string/NetworkError"
+            android:textSize="40dp"
+        />
+    </LinearLayout>
+    
+    <LinearLayout android:id="@+id/bindingView"
+                  android:layout_width="fill_parent"  
+                  android:layout_height="fill_parent"  
+                  android:orientation="vertical"
+                  android:layout_marginTop="20dp"
+                  android:layout_marginLeft="20dp"
+                  android:layout_marginRight="20dp"
+                  android:visibility="gone">
+        <TextView
+            android:layout_width="fill_parent"  
+            android:layout_height="wrap_content"  
+            android:text="@string/UserName"   
+            android:textSize="18dp"
+        />
+        <EditText  
+            android:id="@+id/userName"
+            android:singleLine="true"
+            android:layout_width="fill_parent"  
+            android:layout_height="wrap_content"  
+            android:text=""   
+            android:textSize="18dp"   
+            android:layout_marginTop="5dp"
+        />
+        
+        <TextView
+            android:layout_width="fill_parent"  
+            android:layout_height="wrap_content"  
+            android:text="@string/DeviceName"   
+            android:textSize="18dp"
+            android:layout_marginTop="20dp"
+        />
+        <EditText  
+            android:id="@+id/deviceName"
+            android:singleLine="true"
+            android:layout_width="fill_parent"  
+            android:layout_height="wrap_content"  
+            android:text=""   
+            android:textSize="18dp"   
+            android:layout_marginTop="5dp"
+        />
+        
+        <RelativeLayout android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="40dp">
+            <Button
+                android:id="@+id/bindButton"
+                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:text="@string/Binding"
+                android:onClick="bindButton_Click"
+            />  
+            <Button
+                android:id="@+id/unbindButton"
+                android:layout_height="wrap_content"
+                android:layout_width="120dp"
+                android:text="@string/Unbinding"
+                android:layout_alignParentRight="true"
+                android:onClick="unbindButton_Click"
+            />
+        </RelativeLayout>
+        
+        <TextView
+            android:id="@+id/goReg"
+            android:layout_width="fill_parent"  
+            android:layout_height="wrap_content"  
+            android:textSize="18dp"
+            android:layout_marginTop="50dp"
+        />
+        
+    </LinearLayout>
+    
+    <ProgressBar android:id="@+id/progressBar"
+                 android:layout_centerInParent="true"
+                 android:layout_width="wrap_content" 
+                 android:layout_height="wrap_content"   
+                 android:visibility="gone"
+    />
+
+</RelativeLayout>  

@@ -1,0 +1,334 @@
+﻿@using Walkmap.DAL.Model
+@using System.Net.Http
+@model Trail[]
+@{
+    Layout = null;
+
+    bool isInChina = true;
+    if (Model.Length > 0)
+    {
+        Trail firstTrail = Model[0];
+
+        double? latitude = null;
+        double? longitude = null;
+        if (firstTrail.Latitude != null && firstTrail.Longitude != null)
+        {
+            latitude = firstTrail.Latitude;
+            longitude = firstTrail.Longitude;
+        }
+        else if (firstTrail.LatitudeForMap != null && firstTrail.LongitudeForMap != null)
+        {
+            latitude = firstTrail.LatitudeForMap;
+            longitude = firstTrail.LongitudeForMap;
+        }
+
+        if (latitude != null && longitude != null)
+        {
+            try
+            {
+                string url = String.Format("http://dev.virtualearth.net/REST/v1/Locations/{0},{1}?includeEntityTypes=countryRegion&o=json&key=Ak2cdJ3QVMNBLp6-l6r4gBxAM_y8hfAdMZSHdRXwNV25byOrQXurOfJ0l5OJ_FHU", latitude.Value, longitude.Value);
+
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = client.GetAsync(url).Result;
+                    string result = response.Content.ReadAsStringAsync().Result;
+                    if (result.Contains("countryRegion") == true && result.Contains("China") == false)
+                    {
+                        isInChina = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            { }
+        }
+    }
+
+    ////////////////////////
+    //isInChina = false;
+    ////////////////////////
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        body, html, #mapDiv {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            font-family: "微软雅黑";
+        }
+    </style>
+
+    <style type="text/css" id="pinAnimation">
+        @@keyframes rainbow {
+		  0% { margin-top: 0px; }
+		  50% { margin-top: -12px; }
+		  100% { margin-top: 0px; }
+		}
+
+        div a:first-child.pushpin{
+			animation: 1s rainbow infinite;
+		}
+
+        .baiduPushPin{
+			animation: 1s rainbow infinite;
+		}
+    </style>
+
+    @if (isInChina == true)
+    {
+        <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=wEBZaPUh2bYQVvSjDAli7MQa"></script>
+    }
+    else
+    {
+        <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+    }
+
+    <title>Trail Map</title>
+</head>
+<body>
+    <div id="mapDiv"></div>
+</body>
+</html>
+
+<script type="text/javascript">
+
+    /////////////////////////////////
+    function ready(fn){
+        if(document.addEventListener) {
+            document.addEventListener('DOMContentLoaded', function() {
+                document.removeEventListener('DOMContentLoaded',arguments.callee, false);
+                fn();
+            }, false);
+        }else if(document.attachEvent) {
+            document.attachEvent('onreadystatechange', function() {
+                if(document.readyState == 'complete') {
+                    document.detachEvent('onreadystatechange', arguments.callee);
+                    fn();
+                }
+            });
+        }
+    };
+
+    function changeNodeToFirst(node, container){
+        if(container.hasChildNodes()){
+            container.insertBefore(node, container.firstChild);
+        }else{
+            container.appendChild(node);
+        }
+    }
+
+    /////////////////////////////////
+
+    var trails = @Html.Raw(Json.Encode(Model));
+
+    @if (isInChina == true)
+    {
+        <text>
+        function ComplexCustomOverlay(point, text, clickText){
+            this._point = point;
+            this._text = text;
+            this._clickText = clickText;
+        }
+        ComplexCustomOverlay.prototype = new BMap.Overlay();
+        ComplexCustomOverlay.prototype.initialize = function(mapObject){
+            this._map = mapObject;
+            var div = this._div = document.createElement("div");
+            div.style.textAlign = "center";
+            div.style.position = "absolute";
+            div.style.zIndex = 100 - parseInt(this._text);
+            div.style.backgroundColor = "#EE5D5B";
+            div.style.border = "2px solid #BC3B3A";
+            div.style.color = "white";
+            div.style.height = "18px";
+            div.style.width = "18px";
+            div.style.padding = "2px";
+            div.style.lineHeight = "18px";
+            div.style.whiteSpace = "nowrap";
+            div.style.MozUserSelect = "none";
+            div.style.fontSize = "12px";
+            div.style.fontWeight = "bold";
+            div.style.borderRadius = "15px";
+            if(parseInt(this._text) == 1)
+            {
+                div.className = "baiduPushPin";
+            }
+
+            var span = this._span = document.createElement("span");
+            div.appendChild(span);
+            span.appendChild(document.createTextNode(this._text));      
+            var that = this;
+     
+            div.onmouseover = function(){
+                this.style.backgroundColor = "#6BADCA";
+                div.style.border = "2px solid #6BADCA";
+                this.style.zIndex = 100;
+            }
+	  
+            function pointClick(){
+                var opts = {
+                    width: 0,
+                    height: 0,
+                    enableMessage: false
+                };
+		
+                var infoWindow = new BMap.InfoWindow(that._clickText, opts);
+			
+                that._map.openInfoWindow(infoWindow, that._point);
+            }
+
+            div.onclick = pointClick;
+            div.addEventListener("touchend", pointClick, false);
+
+            div.onmouseout = function(){
+                this.style.backgroundColor = "#EE5D5B";
+                div.style.border = "2px solid #BC3B3A";
+                this.style.zIndex = 100 - parseInt(that._text);
+            }
+
+            this._map.getPanes().labelPane.appendChild(div);
+      
+            return div;
+        }
+        ComplexCustomOverlay.prototype.draw = function(){
+            var pixel = this._map.pointToOverlayPixel(this._point);
+            this._div.style.left = pixel.x -10 + "px";
+            this._div.style.top  = pixel.y -20 + "px";
+        }
+
+        /////////////////////////////////////
+
+        var map;
+
+        function loadMap(jsonResult)
+        {
+            map = new BMap.Map("mapDiv");
+            map.addControl(new BMap.MapTypeControl({ anchor: BMAP_ANCHOR_TOP_LEFT }));
+            map.addControl(new BMap.NavigationControl({ anchor: BMAP_ANCHOR_TOP_RIGHT }));
+
+            var mapPoints = jsonResult.result;
+            for (var i = 0; i < mapPoints.length; i++)
+            {
+                var point = new BMap.Point(mapPoints[i].x, mapPoints[i].y);
+                var marker = new ComplexCustomOverlay(point, (i + 1).toString(), trails[i].CreateTime + "  " + trails[i].PositionSource);
+                map.addOverlay(marker);
+
+                if (i == 0)
+                {
+                    map.centerAndZoom(point, 15);
+                }
+            }
+        }
+        
+        var queryString = "";
+        for(var i = 0; i < trails.length; i++)
+        {
+            queryString = queryString + trails[i].Longitude + "," + trails[i].Latitude;
+            if(i != trails.length - 1)
+            {
+                queryString = queryString + ";";
+            }
+        }
+        var urlConvert = "http://api.map.baidu.com/geoconv/v1/?coords=" + queryString + "&from=1&to=5&ak=08tkyWtKvBXwum5HW5rQUCWQ&callback=loadMap";
+        var script = document.createElement("script");
+        script.type = "text/javascript";
+        script.src = urlConvert;
+
+        ready(function(){
+            document.body.appendChild(script);
+        });
+        </text>
+    }
+    else
+    {
+        <text>
+        var map;
+        
+        function themesModuleLoaded()
+        {
+            map = new Microsoft.Maps.Map(document.getElementById('mapDiv'), { credentials: 'Ak2cdJ3QVMNBLp6-l6r4gBxAM_y8hfAdMZSHdRXwNV25byOrQXurOfJ0l5OJ_FHU', theme: new Microsoft.Maps.Themes.BingTheme() });
+            
+            for(var i = 0; i < trails.length; i++)
+            {
+                var location = new Microsoft.Maps.Location(trails[i].Latitude, trails[i].Longitude);
+                var pin = new Microsoft.Maps.Pushpin(location, {text:(i + 1).toString(), zIndex: 100-i});
+                map.entities.push(pin);
+                map.entities.push(new Microsoft.Maps.Infobox(location, {title: trails[i].CreateTime, description: trails[i].PositionSource, pushpin: pin})); 
+
+                if (i == 0)
+                {
+                    map.setView({center: location, zoom: 16});
+                }
+            }
+            
+            var firstPin = document.querySelector("div a:first-child.pushpin");
+            var container = firstPin.parentNode;
+            var observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    for (var i = 0; i < mutation.addedNodes.length; i++)
+                    {
+                        if(mutation.addedNodes[i] instanceof HTMLAnchorElement && mutation.addedNodes[i].innerText == "1")
+                        {
+                            if(container.firstChild != mutation.addedNodes[i])
+                            {
+                                container.insertBefore(mutation.addedNodes[i], container.firstChild);
+                            }
+                            document.getElementById("pinAnimation").disabled= false;
+                        }
+                    }
+
+                    for (var i = 0; i < mutation.removedNodes.length; i++)
+                    {
+                        if(mutation.removedNodes[i] instanceof HTMLAnchorElement && mutation.removedNodes[i].innerText == "1")
+                        {
+                            document.getElementById("pinAnimation").disabled= true;
+                        }
+                    }
+                });
+            });
+            var config = { childList: true, subtree: true };
+            observer.observe(container, config);
+        }
+        
+        ready(function(){
+            Microsoft.Maps.loadModule('Microsoft.Maps.Themes.BingTheme', { callback: themesModuleLoaded });
+        });
+        </text>
+    }
+
+</script>
+@*<script language="JavaScript">
+    function clearAD()
+    {
+        var hasAD = false;
+
+        var scripts = document.getElementsByTagName("script");
+        for(var i = 0; i < scripts.length; i++)
+        {
+            if(scripts[i].src.indexOf("somee.com") > -1)
+            {
+                scripts[i].outerHTML = "";
+                hasAD = true;
+            }
+        }
+
+        var anchors = document.getElementsByTagName("a");
+        for(var i = 0; i < anchors.length; i++)
+        {
+            if(anchors[i].href.indexOf("somee.com") > -1)
+            {
+                anchors[i].outerHTML = "";
+            }
+        }
+
+        if(hasAD == true)
+        {
+            window.stop();
+        }
+	}
+    setTimeout("clearAD();", 500);
+</script>*@

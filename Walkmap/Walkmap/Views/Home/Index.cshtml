@@ -1,0 +1,35 @@
+﻿@{
+    Layout = "SideBarLayout.cshtml";
+    ViewBag.Title = "Home";
+}
+
+@using Walkmap.DAL.Model
+@model Device[]
+
+<style type="text/css">
+    .btn-xl {
+        width: 150px;
+        height: 150px;
+        margin: 20px;
+        font-size: 22px;
+        white-space: pre-wrap;    
+        word-wrap: break-word;
+        overflow:hidden;
+        color:darkturquoise;
+    }
+
+    .btn-xl:hover, .btn-xl:focus, .btn-xl:focus:active {
+        background-color:darkturquoise;
+        color:white;
+    }
+</style>
+
+
+<h1 class="page-header">Device List</h1>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <a href="@Url.Action("ShowTrail", "Home", new { id = item.ID })" class="btn btn-default btn-xl"><span style="font-size:40px;" class="glyphicon glyphicon-phone"></span><br />@(item.DeviceName)</a>
+    }
+</div>

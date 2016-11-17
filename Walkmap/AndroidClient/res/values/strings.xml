@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="NetworkError">Network Error</string>
+	<string name="UserName">User Name:</string>
+	<string name="DeviceName">Device Name:</string>
+	<string name="Binding">Binding</string>
+	<string name="Unbinding">Unbinding</string>
+	<string name="UserDeviceNameNotNull">User name and device name cannot be empty!</string>
+	<string name="UserNameNotExist">User name {0} not exist!</string>
+	<string name="DeviceNameExisted">The device name {0} existed!</string>
+	<string name="GoReg">Go to register user</string>
+</resources>

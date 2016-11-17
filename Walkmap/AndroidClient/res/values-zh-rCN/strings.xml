@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="NetworkError">网络错误</string>
+	<string name="UserName">用户名:</string>
+	<string name="DeviceName">设备名:</string>
+	<string name="Binding">绑  定</string>
+	<string name="Unbinding">解  绑</string>
+	<string name="UserDeviceNameNotNull">用户名和设备名不能为空!</string>
+	<string name="UserNameNotExist">用户名 {0} 不存在!</string>
+	<string name="DeviceNameExisted">设备名 {0} 已存在!</string>
+	<string name="GoReg">去注册用户</string>
+</resources>
